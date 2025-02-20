@@ -1,77 +1,101 @@
+
 public class Repository {
     private int number;
-    boolean newValue;
+    boolean newValue = false;// Flag to track new vaue
 
 
-    public Repository(int value){
-        this.number=value;
+    public Repository(int value) {
+        this.number = value;
     }
-    public int getNumber(){
+
+    // This method retrieves the current number and is synchronized
+    public synchronized int getNumber() {
+        // waits until new value
+        while (!newValue) {
+            try {
+                wait();// Release the lock and waits for notify();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        newValue = false;
+        notify();//Notify that the value is changed
+
         return number;
     }
 
-    public void setNumber(int value){
-        this.number=value;
+    // this method is synchronized and set a new number
+    public synchronized void setNumber(int value) {
+        //waits until last value is chnaged
+        while (newValue) {
+            try {
+                wait();// Release the lock and waits for notify();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        this.number = value;
+        newValue = true;
+
+        notify();//Notify that the value is changed
     }
-    public static void main(String [] args){
+//Main method creates and start the Counter and Publisher threads
 
-        Repository repository = new Repository(0);
+    public static void main(String[] args) {
 
-        Counter count = new Counter(repository);
-        Publisher publish = new Publisher(repository);
+        Repository repository = new Repository(0);//Initialse repository to start with the value 0
 
-        count.start();
-        publish.start();
+        Counter count = new Counter(repository); //Create a Counter Thread
+        Publisher publish = new Publisher(repository);//Create a Publisher Thread
+
+        count.start(); //Start the counter Thread
+        publish.start();//Start the publsiher thread
 
     }
 }
 
 
-class Counter extends Thread{
-    private Repository repo ;
+class Counter extends Thread {
+    private Repository repo;
 
-    public Counter(Repository repo){
+    public Counter(Repository repo) {
         this.repo = repo;
     }
+
     public void run() {
-int count =0;
+        int count = 0;
         while (true) {
 
 
-            try {
-                repo.setNumber(count);
-                Thread.sleep(400);
-                count++;
+            repo.setNumber(count);
+            count++;
 
-
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
 
         }
     }
 }
 
 
-class Publisher extends Thread{
-    private Repository repository ;
+class Publisher extends Thread {
+    private Repository repository;
 
-    public Publisher(Repository repo){
+    public Publisher(Repository repo) {
         this.repository = repo;
     }
 
-    public void run(){
+    public void run() {
 
-        while(true){
+        while (true) {
             int value = repository.getNumber();
-            System.out.println("The current value is: "+value);
 
-            try{
 
-                Thread.sleep(500);
-            }catch(InterruptedException e){
-                e.printStackTrace();
-            }
+                System.out.println("The current value is: " + value);
+
+
+
+
         }
 
 

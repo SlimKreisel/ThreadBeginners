@@ -1,4 +1,5 @@
-import javax.swing.*;
+
+/** */
 import java.util.ArrayList;
 
 public class Library {
@@ -46,9 +47,9 @@ public class Library {
 
         Book book1 = new Book("Muhammad SAW", "Ibn Abdullah", "Ab11228", 1400);
         library.addBooks(book1);
-
-        Member m1 = new Member();
-        Member m2 = new Member();
+//        System.out.println(" The book is : "+book1);
+        Member m1 = new Member(library);
+        Member m2 = new Member(library);
 
         m1.start();
         m2.start();

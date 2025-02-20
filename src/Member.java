@@ -1,30 +1,42 @@
 public class Member extends Thread {
-    private Library l1;
+    private Library library;
     private String isbn;
 
     public Member() {
-        l1 = new Library();
+        library = new Library();
         isbn = "Ab11228";
 
     }
 
     public Member(Library l1) {
-        this.l1 = l1;
-
+        this.library = l1;
+        isbn = "Ab11228";
     }
 
     public void run() {
-        System.out.println(l1.findBookIndex(isbn));
 
-        int i = l1.findBookIndex(isbn);
+        Book b = null;
 
-        System.out.println(l1.loanBook(i));
-        Book b =l1.loanBook(i);//       l1.loanBook(l1.findBookIndex(isbn)); You can also do it in this way
+        int i = library.findBookIndex(isbn);
+        System.out.println("book is at position: " + i);
+
+//
+            if( i != -1){
+                 b =library.loanBook(i);     //library.loanBook(library.findBookIndex(isbn)); You can also do it in this way
+                System.out.println("book:" + b);
+            }
+
+
+
+//            System.out.println("Book not been found");
+
         try {
             Thread.sleep(2000);
+            System.out.println("returning book:" + b);
+            library.returnBook(b);
 
-            l1.returnBook(b);
-            System.out.println(b);
+
+            //System.out.println(b);
 
         } catch (InterruptedException e) {
             e.printStackTrace();
